@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>AJ STREAMX</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<style>
+body {margin:0;font-family:Arial;background:#0b1220;color:#fff;display:flex}
+.sidebar{width:220px;background:#020617;padding:20px}
+.sidebar h2{color:#00ff88}
+.sidebar button{width:100%;margin:10px 0;padding:10px;background:#1e293b;color:#fff;border:none}
+.main{flex:1;padding:20px}
+.card{background:#111827;padding:15px;margin:10px 0}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<h2>AJ STREAMX</h2>
+<button onclick="show('trials')">التجارب</button>
+<button onclick="show('addTrial')">إضافة تجربة</button>
+<button onclick="show('plans')">الباقات</button>
+</div>
+
+<div class="main">
+<div id="content"></div>
+</div>
+
+<script>
+// 🔥 حط بياناتك هنا
+const SUPABASE_URL = "YOUR_URL";
+const SUPABASE_KEY = "YOUR_KEY";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function show(section){
+if(section==="trials"){
+document.getElementById("content").innerHTML = `
+<div class="card">
+<h3>كل التجارب</h3>
+<button onclick="loadTrials()">تحميل</button>
+<div id="trialsList"></div>
+</div>`;
+}
+
+if(section==="addTrial"){
+document.getElementById("content").innerHTML = `
+<div class="card">
+<h3>إضافة تجربة</h3>
+<input id="user" placeholder="Username"><br><br>
+<input id="pass" placeholder="Password"><br><br>
+<input id="host" placeholder="Host"><br><br>
+<button onclick="addTrial()">إضافة</button>
+</div>`;
+}
+
+if(section==="plans"){
+document.getElementById("content").innerHTML = `
+<div class="card">
+<h3>الباقات</h3>
+<ul>
+<li>شهري: 100 جنيه / 10$</li>
+<li>3 شهور: 200 جنيه / 15$</li>
+<li>6 شهور: 300 جنيه / 25$</li>
+<li>سنة: 500 جنيه / 40$</li>
+</ul>
+</div>`;
+}
+}
+
+async function addTrial(){
+const user = document.getElementById("user").value;
+const pass = document.getElementById("pass").value;
+const host = document.getElementById("host").value;
+
+await supabase.from("trials").insert([{user,pass,host}]);
+
+alert("تم الإضافة");
+}
+
+async function loadTrials(){
+let {data} = await supabase.from("trials").select("*");
+
+let html="";
+data.forEach(t=>{
+html+=`<div class="card">${t.user} - ${t.pass}</div>`;
+});
+
+document.getElementById("trialsList").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
